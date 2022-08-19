@@ -2,8 +2,9 @@ package com.lalosapps.dictionaryapp.data.local
 
 import com.lalosapps.dictionaryapp.data.local.dao.WordInfoDao
 import com.lalosapps.dictionaryapp.data.local.entity.WordInfoEntity
+import javax.inject.Inject
 
-class LocalWordInfoDataSource(private val wordInfoDao: WordInfoDao) {
+class LocalWordInfoDataSource @Inject constructor(private val wordInfoDao: WordInfoDao) {
 
     suspend fun insertWordInfos(wordInfos: List<WordInfoEntity>) {
         wordInfoDao.insertWordInfos(wordInfos)

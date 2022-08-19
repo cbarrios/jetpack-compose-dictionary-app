@@ -12,8 +12,9 @@ import com.lalosapps.dictionaryapp.domain.model.WordInfo
 import com.lalosapps.dictionaryapp.domain.repository.WordInfoRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
+import javax.inject.Inject
 
-class WordInfoRepositoryImpl(
+class WordInfoRepositoryImpl @Inject constructor(
     private val remoteWordInfoDataSource: RemoteWordInfoDataSource,
     private val localWordInfoDataSource: LocalWordInfoDataSource
 ) : WordInfoRepository {
