@@ -1,6 +1,6 @@
 package com.lalosapps.dictionaryapp.data.remote.dto
 
-import com.lalosapps.dictionaryapp.domain.model.WordInfo
+import com.lalosapps.dictionaryapp.data.local.entity.WordInfoEntity
 
 data class WordInfoDto(
     val meanings: List<MeaningDto>,
@@ -9,7 +9,7 @@ data class WordInfoDto(
     val word: String
 )
 
-fun WordInfoDto.toWordInfo() = WordInfo(
+fun WordInfoDto.toWordInfoEntity() = WordInfoEntity(
     meanings = meanings.map { it.toMeaning() },
     phonetic = phonetic,
     word = word
