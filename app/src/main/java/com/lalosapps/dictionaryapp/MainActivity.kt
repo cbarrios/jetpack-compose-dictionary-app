@@ -3,15 +3,20 @@ package com.lalosapps.dictionaryapp
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Surface
-import androidx.compose.material.Text
-import androidx.compose.runtime.Composable
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.material.*
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.lalosapps.dictionaryapp.core.util.UiEvent
 import com.lalosapps.dictionaryapp.ui.theme.DictionaryAppTheme
+import com.lalosapps.dictionaryapp.ui.wordinfo.WordInfoItem
+import com.lalosapps.dictionaryapp.ui.wordinfo.WordInfoViewModel
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.flow.collectLatest
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
@@ -19,27 +24,55 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         setContent {
             DictionaryAppTheme {
-                // A surface container using the 'background' color from the theme
-                Surface(
-                    modifier = Modifier.fillMaxSize(),
-                    color = MaterialTheme.colors.background
-                ) {
-                    Greeting("Android")
+                val viewModel: WordInfoViewModel = viewModel()
+                val state = viewModel.state
+                val scaffoldState = rememberScaffoldState()
+
+                LaunchedEffect(key1 = true) {
+                    viewModel.eventFlow.collectLatest { event ->
+                        when (event) {
+                            is UiEvent.ShowSnackbar -> {
+                                scaffoldState.snackbarHostState.showSnackbar(event.message)
+                            }
+                        }
+                    }
                 }
+
+                Scaffold(
+                    scaffoldState = scaffoldState
+                ) {
+                    Box(
+                        modifier = Modifier.background(MaterialTheme.colors.background)
+                    ) {
+                        Column(
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .padding(16.dp)
+                        ) {
+                            TextField(
+                                value = viewModel.searchQuery,
+                                onValueChange = viewModel::onSearch,
+                                modifier = Modifier.fillMaxWidth(),
+                                placeholder = { Text(text = getString(R.string.search_query_placeholder)) }
+                            )
+                            Spacer(modifier = Modifier.height(16.dp))
+                            LazyColumn(modifier = Modifier.fillMaxSize()) {
+                                items(state.wordInfoItems.size) { i ->
+                                    val wordInfo = state.wordInfoItems[i]
+                                    if (i > 0) {
+                                        Spacer(modifier = Modifier.height(8.dp))
+                                    }
+                                    WordInfoItem(wordInfo)
+                                    if (i < state.wordInfoItems.lastIndex) {
+                                        Divider()
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+
             }
         }
-    }
-}
-
-@Composable
-fun Greeting(name: String) {
-    Text(text = "Hello $name!")
-}
-
-@Preview(showBackground = true)
-@Composable
-fun DefaultPreview() {
-    DictionaryAppTheme {
-        Greeting("Android")
     }
 }

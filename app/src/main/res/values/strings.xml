@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">Dictionary App</string>
+    <string name="search_query_placeholder">Search…</string>
 </resources>

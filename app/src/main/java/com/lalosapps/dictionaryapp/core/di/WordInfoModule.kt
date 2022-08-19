@@ -8,6 +8,7 @@ import com.lalosapps.dictionaryapp.core.util.json.GsonParser
 import com.lalosapps.dictionaryapp.data.local.LocalWordInfoDataSource
 import com.lalosapps.dictionaryapp.data.local.dao.WordInfoDao
 import com.lalosapps.dictionaryapp.data.local.db.WordInfoDatabase
+import com.lalosapps.dictionaryapp.data.local.entity.Converters
 import com.lalosapps.dictionaryapp.data.remote.RemoteWordInfoDataSource
 import com.lalosapps.dictionaryapp.data.remote.api.DictionaryApi
 import com.lalosapps.dictionaryapp.data.repository.WordInfoRepositoryImpl
@@ -32,7 +33,7 @@ object WordInfoModule {
             context,
             WordInfoDatabase::class.java,
             Constants.WORD_INFO_DATABASE_NAME
-        ).addTypeConverter(GsonParser(Gson())).build()
+        ).addTypeConverter(Converters(GsonParser(Gson()))).build()
 
     @Provides
     @Singleton
