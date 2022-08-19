@@ -8,7 +8,7 @@ import com.lalosapps.dictionaryapp.domain.model.WordInfo
 @Entity
 data class WordInfoEntity(
     val meanings: List<Meaning>,
-    val phonetic: String,
+    val phonetic: String?,
     val word: String,
     @PrimaryKey val id: Int? = null
 )

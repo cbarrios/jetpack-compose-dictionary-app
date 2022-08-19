@@ -38,6 +38,10 @@ class WordInfoViewModel @Inject constructor(
     fun onSearch(query: String) {
         searchQuery = query
         searchJob?.cancel()
+        if (query.isBlank()) {
+            state = state.copy(isLoading = false)
+            return
+        }
         searchJob = viewModelScope.launch {
             delay(Constants.ON_SEARCH_TIME_DELAY)
             getWordInfoUseCase(query).onEach { result ->

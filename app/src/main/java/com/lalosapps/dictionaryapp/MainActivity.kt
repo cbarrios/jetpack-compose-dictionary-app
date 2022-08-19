@@ -6,9 +6,15 @@ import androidx.activity.compose.setContent
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.lalosapps.dictionaryapp.core.util.UiEvent
@@ -20,6 +26,7 @@ import kotlinx.coroutines.flow.collectLatest
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
+    @ExperimentalComposeUiApi
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
@@ -27,6 +34,7 @@ class MainActivity : ComponentActivity() {
                 val viewModel: WordInfoViewModel = viewModel()
                 val state = viewModel.state
                 val scaffoldState = rememberScaffoldState()
+                val keyboardController = LocalSoftwareKeyboardController.current
 
                 LaunchedEffect(key1 = true) {
                     viewModel.eventFlow.collectLatest { event ->
@@ -44,6 +52,11 @@ class MainActivity : ComponentActivity() {
                     Box(
                         modifier = Modifier.background(MaterialTheme.colors.background)
                     ) {
+                        if (state.isLoading) {
+                            CircularProgressIndicator(
+                                modifier = Modifier.align(Alignment.Center)
+                            )
+                        }
                         Column(
                             modifier = Modifier
                                 .fillMaxSize()
@@ -53,7 +66,13 @@ class MainActivity : ComponentActivity() {
                                 value = viewModel.searchQuery,
                                 onValueChange = viewModel::onSearch,
                                 modifier = Modifier.fillMaxWidth(),
-                                placeholder = { Text(text = getString(R.string.search_query_placeholder)) }
+                                placeholder = { Text(text = getString(R.string.search_query_placeholder)) },
+                                keyboardOptions = KeyboardOptions(
+                                    imeAction = ImeAction.Done
+                                ),
+                                keyboardActions = KeyboardActions(
+                                    onDone = { keyboardController?.hide() }
+                                )
                             )
                             Spacer(modifier = Modifier.height(16.dp))
                             LazyColumn(modifier = Modifier.fillMaxSize()) {

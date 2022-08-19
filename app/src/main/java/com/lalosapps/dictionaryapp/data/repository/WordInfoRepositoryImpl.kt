@@ -25,6 +25,8 @@ class WordInfoRepositoryImpl @Inject constructor(
         val wordInfos = localWordInfoDataSource.getWordInfos(word).map { it.toWordInfo() }
         emit(Resource.Loading(wordInfos))
 
+        val wordInfo = wordInfos.firstOrNull { it.word == word }
+
         try {
             val response = remoteWordInfoDataSource.getWordInfo(word)
             val remoteWordInfos = response.body()
@@ -36,15 +38,17 @@ class WordInfoRepositoryImpl @Inject constructor(
                 val type = object : TypeToken<ErrorResponse>() {}.type
                 val errorResponse: ErrorResponse =
                     gson.fromJson(response.errorBody()?.charStream(), type)
-                emit(
-                    Resource.Error(
-                        "Error ${response.code()}. ${errorResponse.message}",
-                        wordInfos
+                if (wordInfo == null) {
+                    emit(
+                        Resource.Error(
+                            "Error ${response.code()}. ${errorResponse.message}",
+                            wordInfos
+                        )
                     )
-                )
+                }
             }
         } catch (e: Exception) {
-            emit(Resource.Error(e.message.toString(), wordInfos))
+            if (wordInfo == null) emit(Resource.Error(e.message.toString(), wordInfos))
         }
 
         val newWordInfos = localWordInfoDataSource.getWordInfos(word).map { it.toWordInfo() }

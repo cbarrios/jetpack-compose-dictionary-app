@@ -4,7 +4,7 @@ import com.lalosapps.dictionaryapp.data.local.entity.WordInfoEntity
 
 data class WordInfoDto(
     val meanings: List<MeaningDto>,
-    val phonetic: String,
+    val phonetic: String?,
     val phonetics: List<PhoneticDto>,
     val word: String
 )
